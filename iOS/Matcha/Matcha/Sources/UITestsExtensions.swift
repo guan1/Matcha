@@ -49,7 +49,7 @@ extension String {
 }
 
 extension UIViewController {
-    func matcha_getVisibleViewController() -> UIViewController? {
+    public func matcha_getVisibleViewController() -> UIViewController? {
         return matcha_getVisibleViewController(self)
     }
     
