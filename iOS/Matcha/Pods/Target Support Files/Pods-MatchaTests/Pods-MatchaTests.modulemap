@@ -1,0 +1,6 @@
+framework module Pods_MatchaTests {
+  umbrella header "Pods-MatchaTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
