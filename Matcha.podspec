@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
 	
 	s.xcconfig       = { 'FRAMEWORK_SEARCH_PATHS' => '"$(PODS_ROOT)/"' }
 
-	s.source = { :git => "https://github.com/guan1/Matcha.git", :commit => "83f035da2952ab8756bf9b8785a7b4b4db185713" }		
+	s.source = { :git => "https://github.com/guan1/Matcha.git", :commit => "b955afba2964e8fe0151d61beddb5fb0bb02e4c2" }		
 		s.source_files  = "iOS/Matcha/Matcha/Sources/*.*"
 #	s.source       = { :http => "https://dl.dropboxusercontent.com/u/5810798/Matcha/x.zip"}
 # s.source_files = '*.swift', '*.h', '*.m'
