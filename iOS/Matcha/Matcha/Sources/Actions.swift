@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Action : NSObject, NSCopying {
+open class Action : NSObject, NSCopying {
     
     var name : String
     var element : String?
@@ -59,13 +59,13 @@ public class Action : NSObject, NSCopying {
         return Action(name: name, firstParameter: firstParameter, parameters: parameters, line: line)
     }    
     
-    public func copy(with zone: NSZone? = nil) -> Any {
+    open func copy(with zone: NSZone? = nil) -> Any {
         let params = self.parameters != nil ? self.parameters! : [:]
         return type(of:self).init(name: self.name, firstParameter: self.element, parameters: params, line: self.line)
     }
 }
 
-public class HttpAction : Action {
+open class HttpAction : Action {
     var url : String
     var header: String?
     var params: String?
@@ -78,7 +78,7 @@ public class HttpAction : Action {
     }
 }
 
-public class ScrollAction : Action {
+open class ScrollAction : Action {
     var to : String
     var direction : String = "right"
     var amount : Float = 500
@@ -95,7 +95,7 @@ public class ScrollAction : Action {
     }
 }
 
-public class ExecuteJSAction : Action {
+open class ExecuteJSAction : Action {
     var code : String
     required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         if parameters["value"] != nil {
@@ -108,7 +108,7 @@ public class ExecuteJSAction : Action {
     }
 }
 
-public class VerifyNavigationAction : Action {
+open class VerifyNavigationAction : Action {
     var navigationTitle : String
     
     required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
@@ -121,7 +121,7 @@ public class VerifyNavigationAction : Action {
     }
 }
 
-public class VerifyAction : Action {
+open class VerifyAction : Action {
     var value : String?
     required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         self.value = parameters["value"] as? String
@@ -129,7 +129,7 @@ public class VerifyAction : Action {
     }
 }
 
-public class EnterAction : Action {
+open class EnterAction : Action {
     var value : String?
     required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         self.value = parameters["value"] as? String
@@ -137,7 +137,7 @@ public class EnterAction : Action {
     }
 }
 
-public class WaitAction : Action {
+open class WaitAction : Action {
     var value : TimeInterval = 0.5
     required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         if parameters["value"] != nil {
@@ -149,7 +149,7 @@ public class WaitAction : Action {
     }
 }
 
-public class SearchFieldAction : Action {
+open class SearchFieldAction : Action {
     var value : String = ""
     required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         if parameters["value"] != nil {

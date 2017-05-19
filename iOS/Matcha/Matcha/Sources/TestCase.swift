@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class TestCase {
+open class TestCase {
     var fileName : String
     var name : String
     var scenarios:[Scenario] = []

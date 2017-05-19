@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Scanner {
+open class Scanner {
     var testCase : TestCase?
     
     init(fileName: String) {

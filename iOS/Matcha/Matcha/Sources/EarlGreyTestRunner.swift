@@ -15,7 +15,7 @@ public protocol EarlGreyTestRunnerDelegate {
     func getSearchBar(_ action: SearchFieldAction) -> UISearchBar?
 }
 
-public class EarlGreyTestRunner : NSObject {
+open class EarlGreyTestRunner : NSObject {
     var testCasePath : String?
     
     private var testCase: TestCase

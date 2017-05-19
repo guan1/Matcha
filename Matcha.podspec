@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "Matcha"
-  s.version      = "0.0.1"
+  s.version      = "0.0.3"
   s.summary      = "A DSL for automated UI tests using EarlGrey"
 
   s.description  = <<-DESC
