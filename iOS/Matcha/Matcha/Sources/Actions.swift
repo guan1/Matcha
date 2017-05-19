@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Action : NSObject, NSCopying {
+public class Action : NSObject, NSCopying {
     
     var name : String
     var element : String?
@@ -18,7 +18,7 @@ class Action : NSObject, NSCopying {
     var wait : TimeInterval = 2.0
     var pollInterval : Float = 0.25
     
-    required init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
+    required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         self.name = name
         self.element = firstParameter
         if parameters.isEmpty == false {
@@ -59,18 +59,18 @@ class Action : NSObject, NSCopying {
         return Action(name: name, firstParameter: firstParameter, parameters: parameters, line: line)
     }    
     
-    func copy(with zone: NSZone? = nil) -> Any {
+    public func copy(with zone: NSZone? = nil) -> Any {
         let params = self.parameters != nil ? self.parameters! : [:]
         return type(of:self).init(name: self.name, firstParameter: self.element, parameters: params, line: self.line)
     }
 }
 
-class HttpAction : Action {
+public class HttpAction : Action {
     var url : String
     var header: String?
     var params: String?
     
-    required init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
+    required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         self.url = parameters["url"] as! String
         self.header = parameters["headers"] as? String
         self.params = parameters["params"] as? String
@@ -78,12 +78,12 @@ class HttpAction : Action {
     }
 }
 
-class ScrollAction : Action {
+public class ScrollAction : Action {
     var to : String
     var direction : String = "right"
     var amount : Float = 500
     
-   required init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
+   required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         self.to = parameters["to"] as! String
         if parameters["direction"] != nil {
             self.direction = parameters["direction"] as! String
@@ -95,9 +95,9 @@ class ScrollAction : Action {
     }
 }
 
-class ExecuteJSAction : Action {
+public class ExecuteJSAction : Action {
     var code : String
-    required init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
+    required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         if parameters["value"] != nil {
             self.code = parameters["value"] as! String
         } else {
@@ -108,10 +108,10 @@ class ExecuteJSAction : Action {
     }
 }
 
-class VerifyNavigationAction : Action {
+public class VerifyNavigationAction : Action {
     var navigationTitle : String
     
-    required init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
+    required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         if parameters["value"] != nil {
             self.navigationTitle = parameters["value"] as! String
         } else {
@@ -121,25 +121,25 @@ class VerifyNavigationAction : Action {
     }
 }
 
-class VerifyAction : Action {
+public class VerifyAction : Action {
     var value : String?
-    required init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
+    required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         self.value = parameters["value"] as? String
         super.init(name: name, firstParameter: firstParameter, parameters: parameters, line: line)
     }
 }
 
-class EnterAction : Action {
+public class EnterAction : Action {
     var value : String?
-    required init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
+    required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         self.value = parameters["value"] as? String
         super.init(name: name, firstParameter: firstParameter, parameters: parameters, line: line)
     }
 }
 
-class WaitAction : Action {
+public class WaitAction : Action {
     var value : TimeInterval = 0.5
-    required init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
+    required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         if parameters["value"] != nil {
             self.value = parameters["value"] as! TimeInterval
         } else if let firstParameter = firstParameter {
@@ -149,9 +149,9 @@ class WaitAction : Action {
     }
 }
 
-class SearchFieldAction : Action {
+public class SearchFieldAction : Action {
     var value : String = ""
-    required init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
+    required public init(name: String, firstParameter: String?, parameters: [String : Any], line: UInt) {
         if parameters["value"] != nil {
             self.value = parameters["value"] as! String
         } else if let firstParameter = firstParameter {

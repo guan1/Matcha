@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Scanner {
+public class Scanner {
     var testCase : TestCase?
     
     init(fileName: String) {
@@ -95,7 +95,7 @@ class Scanner {
                     
                     if trimmedLine.hasPrefix("@") {
                         //Sample: @verify element { key : 'value' } -> [verify, "{key:value}"]
-                        let actionAndParams = trimmedLine.splitStep()
+                        let actionAndParams = trimmedLine.matcha_splitStep()
                         
                         //Sample: verify
                         currentActionName = actionAndParams.0
@@ -117,12 +117,12 @@ class Scanner {
                             } else if paramsAsString.hasPrefix("{") && paramsAsString.hasSuffix("}") {
                                 //Sample: { key : 'value' }
                                 parameters = parseParams(string: paramsAsString)
-                            } else if paramsAsString.isValue() {
+                            } else if paramsAsString.matcha_isValue() {
                                 //Sample: 'value'
-                                value = paramsAsString.trimValue()
+                                value = paramsAsString.matcha_trimValue()
                             } else {
                                 //Sample: element { key : 'value' }
-                                let paramsArray = paramsAsString.splitToFirstSpace()
+                                let paramsArray = paramsAsString.matcha_splitToFirstSpace()
                                 if paramsArray?.isEmpty == false {
                                     var i = 0
                                     for p1 in paramsArray! {
@@ -147,7 +147,7 @@ class Scanner {
                                             
                                         } else if (trimmedP.hasPrefix("'") && trimmedP.hasSuffix("'")) || (trimmedP.hasPrefix("\"") && trimmedP.hasSuffix("\"")) {
                                             //Sample: element 'value'
-                                            value = trimmedP.trimValue()
+                                            value = trimmedP.matcha_trimValue()
                                         }
                                         
                                         i = i + 1
@@ -213,7 +213,7 @@ class Scanner {
                 currentToken = ""
                 continue
             } else  if c == "}" || c == "," {
-                value = currentToken.trimValue()
+                value = currentToken.matcha_trimValue()
                 parameters[key] = value.trimmingCharacters(in: CharacterSet.whitespaces)
                 currentToken = ""
                 continue

@@ -14,8 +14,8 @@ import UIKit
 extension String {
     
     //@test something, something -> (test, "something something")
-    func splitStep() -> (String, String?) {
-        let array = self.splitToFirstSpace()!
+    func matcha_splitStep() -> (String, String?) {
+        let array = self.matcha_splitToFirstSpace()!
         let actionName = array[0].substring(from: array[0].characters.index(array[0].startIndex, offsetBy: "@".lengthOfBytes(using: String.Encoding.utf8)))
         if array.count > 1 {
             let actionParamsAsString = array[1].trimmingCharacters(in: CharacterSet.whitespaces)
@@ -24,20 +24,20 @@ extension String {
         return (actionName, nil)
     }
     
-    func splitToFirstSpace() -> [String]? {
+    func matcha_splitToFirstSpace() -> [String]? {
         return self.characters.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: true).map(String.init)
     }
     
     //starts/ends with ' or "?
-    func isValue() -> Bool {
+    func matcha_isValue() -> Bool {
         let s = self.trimmingCharacters(in: CharacterSet.whitespaces)
         return (s.hasPrefix("'") && s.hasSuffix("'")) || (s.hasPrefix("\"") && s.hasSuffix("\""))
     }
     
     //remove leading/trailing spaces and ' or "
-    func trimValue() -> String {
+    func matcha_trimValue() -> String {
         let s = self.trimmingCharacters(in: CharacterSet.whitespaces)
-        if s.isValue() {
+        if s.matcha_isValue() {
             let end = s.index(s.endIndex, offsetBy: -1)
             let start = s.index(s.startIndex, offsetBy: 1)
             let range = start..<end
@@ -49,11 +49,11 @@ extension String {
 }
 
 extension UIViewController {
-    func _getVisibleViewController() -> UIViewController? {
-        return _getVisibleViewController(self)
+    func matcha_getVisibleViewController() -> UIViewController? {
+        return matcha_getVisibleViewController(self)
     }
     
-    func _getVisibleViewController(_ rootViewController: UIViewController?) -> UIViewController? {
+    func matcha_getVisibleViewController(_ rootViewController: UIViewController?) -> UIViewController? {
         guard let rootViewController = rootViewController else {
             return nil
         }
@@ -68,19 +68,19 @@ extension UIViewController {
             if tabBarController.selectedViewController == nil {
                 return tabBarController
             }
-            return _getVisibleViewController(tabBarController.selectedViewController)
+            return matcha_getVisibleViewController(tabBarController.selectedViewController)
         }
         
         if rootViewController.presentedViewController == nil {
             return rootViewController
         }
-        return _getVisibleViewController(rootViewController.presentedViewController)
+        return matcha_getVisibleViewController(rootViewController.presentedViewController)
     }
     
 }
 
 extension UISearchBar {
-    func _searchBarTextField() -> UITextField? {
+    func matcha_searchBarTextField() -> UITextField? {
         for subView in self.subviews {
             for sView in subView.subviews {
                 if let textField = sView as? UITextField {
@@ -91,7 +91,7 @@ extension UISearchBar {
         return nil
     }
     
-    func _searchBarCancelButton() -> UIButton? {
+    func matcha_searchBarCancelButton() -> UIButton? {
         for subView in self.subviews {
             for sView in subView.subviews {
                 if let textField = sView as? UITextField {

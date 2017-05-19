@@ -9,15 +9,15 @@
 import Foundation
 import XCTest
 
-class EarlGreyTests : XCTestCase, EarlGreyTestRunnerDelegate {
+public class EarlGreyTests : XCTestCase, EarlGreyTestRunnerDelegate {
     private var fileName : String!
     
-    override func setUp() {
+    override public func setUp() {
         super.setUp()
         continueAfterFailure = false
     }
     
-    override func tearDown() {
+    override public func tearDown() {
         super.tearDown()
     }
     
@@ -35,7 +35,7 @@ class EarlGreyTests : XCTestCase, EarlGreyTestRunnerDelegate {
         EarlGreyTestRunner.waitForCompletion(timeout: timeout, pollInterval: pollInterval, completionBlock: completionBlock)
     }
     
-    func getSearchBar(_ action: SearchFieldAction) -> UISearchBar? {
+    public func getSearchBar(_ action: SearchFieldAction) -> UISearchBar? {
         XCTFail("subclasses have to override this method!")
         return nil
     }

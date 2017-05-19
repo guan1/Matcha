@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Scenario {
+public class Scenario {
     var name : String
     var preconditions:[Action] = []
     var steps:[Action] = []

@@ -11,11 +11,11 @@ import XCTest
 import EarlGrey
 
 @objc
-protocol EarlGreyTestRunnerDelegate {
+public protocol EarlGreyTestRunnerDelegate {
     func getSearchBar(_ action: SearchFieldAction) -> UISearchBar?
 }
 
-class EarlGreyTestRunner : NSObject {
+public class EarlGreyTestRunner : NSObject {
     var testCasePath : String?
     
     private var testCase: TestCase
@@ -141,10 +141,10 @@ class EarlGreyTestRunner : NSObject {
     func searchField(_ action: SearchFieldAction) {
         let searchBar = getSearchBar(action)
         if let searchBar = searchBar {
-            searchBar._searchBarTextField()?.becomeFirstResponder()
+            searchBar.matcha_searchBarTextField()?.becomeFirstResponder()
             EarlGreyTestRunner.waitForCompletion(timeout: action.wait, pollInterval: TimeInterval(action.pollInterval))
         
-            searchBar._searchBarTextField()?.text = action.value
+            searchBar.matcha_searchBarTextField()?.text = action.value
             searchBar.delegate?.searchBar!(searchBar, textDidChange: action.value)
         
             EarlGreyTestRunner.waitForCompletion(timeout: action.wait, pollInterval: TimeInterval(action.pollInterval))
@@ -208,7 +208,7 @@ class EarlGreyTestRunner : NSObject {
         let text = action.navigationTitle
         let appDelegate = UIApplication.shared.delegate
         if let appDelegate = appDelegate, let window = appDelegate.window {
-            let viewController = window!.rootViewController?._getVisibleViewController()
+            let viewController = window!.rootViewController?.matcha_getVisibleViewController()
             if let title = viewController?.title {
                 if text != title {
                     handleError(error: NSError(domain: "Wrong navigation title. Expected: \(text), Actual: \(title)", code: 0, userInfo: nil))
@@ -232,7 +232,7 @@ class EarlGreyTestRunner : NSObject {
     func back(_ action: Action) {
         let appDelegate = UIApplication.shared.delegate
         if let appDelegate = appDelegate, let window = appDelegate.window {
-            let viewController = window!.rootViewController?._getVisibleViewController()
+            let viewController = window!.rootViewController?.matcha_getVisibleViewController()
             viewController?.navigationController?.popViewController(animated: true)
             
             waitForCompletion(action: action)
