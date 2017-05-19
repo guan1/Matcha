@@ -21,7 +21,7 @@ open class EarlGreyTests : XCTestCase, EarlGreyTestRunnerDelegate {
         super.tearDown()
     }
     
-    func performTests(fileName: String, testCasePath: String? = nil) {
+    open func performTests(fileName: String, testCasePath: String? = nil) {
         self.fileName = fileName
         let scanner = Scanner(fileName: fileName)
         if let testCase = scanner.testCase {
@@ -31,7 +31,7 @@ open class EarlGreyTests : XCTestCase, EarlGreyTestRunnerDelegate {
         }
     }
     
-    func waitForCompletion(timeout: TimeInterval, pollInterval: TimeInterval, completionBlock: (() -> Bool)? = nil) {
+    open func waitForCompletion(timeout: TimeInterval, pollInterval: TimeInterval, completionBlock: (() -> Bool)? = nil) {
         EarlGreyTestRunner.waitForCompletion(timeout: timeout, pollInterval: pollInterval, completionBlock: completionBlock)
     }
     

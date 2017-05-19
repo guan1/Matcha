@@ -76,7 +76,7 @@ open class EarlGreyTestRunner : NSObject {
         }
     }
     
-    func enter(_ action : EnterAction) {
+    open func enter(_ action : EnterAction) {
         let elementId = action.element!
         let text = action.value!
         var error: NSError?
@@ -85,11 +85,11 @@ open class EarlGreyTestRunner : NSObject {
         handleError(error: error)
     }
     
-    func contains(_ action: VerifyAction) {
+    open func contains(_ action: VerifyAction) {
         verify(action, contains: true)
     }
     
-    func verify(_ action: Action) {
+    open func verify(_ action: Action) {
         if action.isKind(of: VerifyNavigationAction.self) {
             verifyNavigationTitle(action as! VerifyNavigationAction)
         } else {
@@ -134,11 +134,11 @@ open class EarlGreyTestRunner : NSObject {
         handleError(error: error)
     }
     
-    func url(_ action: HttpAction) {
+    open func url(_ action: HttpAction) {
         //TODO or let sub classes do this
     }
     
-    func searchField(_ action: SearchFieldAction) {
+    open func searchField(_ action: SearchFieldAction) {
         let searchBar = getSearchBar(action)
         if let searchBar = searchBar {
             searchBar.matcha_searchBarTextField()?.becomeFirstResponder()
@@ -158,11 +158,11 @@ open class EarlGreyTestRunner : NSObject {
         }
     }
     
-    func getSearchBar(_ action: SearchFieldAction) -> UISearchBar? {
+    open func getSearchBar(_ action: SearchFieldAction) -> UISearchBar? {
         return delegate?.getSearchBar(action)
     }
     
-    func click(_ action: Action) {
+    open func click(_ action: Action) {
         let elementId = action.element!
         var error: NSError?
         MatchaEarlGrey.select(elementWithMatcher: grey_accessibilityID(elementId)).perform(grey_tap(), error: &error)
@@ -171,14 +171,14 @@ open class EarlGreyTestRunner : NSObject {
         EarlGreyTestRunner.waitForCompletion(timeout: action.wait, pollInterval: TimeInterval(action.pollInterval))
     }
     
-    func wait(_ action: WaitAction) {
+    open func wait(_ action: WaitAction) {
         let condition = GREYCondition(name: "waitCondition") { () -> Bool in
             return false
         }
         let _ = condition?.wait(withTimeout: CFTimeInterval(action.value), pollInterval: CFTimeInterval(action.value))
     }
     
-    func scroll(_ action: ScrollAction) {
+    open func scroll(_ action: ScrollAction) {
         let scrollingElement = action.element!
         let searchElement = action.to
         let direction = action.direction
@@ -204,7 +204,7 @@ open class EarlGreyTestRunner : NSObject {
     }
 
     
-    func verifyNavigationTitle(_ action: VerifyNavigationAction) {
+    open func verifyNavigationTitle(_ action: VerifyNavigationAction) {
         let text = action.navigationTitle
         let appDelegate = UIApplication.shared.delegate
         if let appDelegate = appDelegate, let window = appDelegate.window {
@@ -218,7 +218,7 @@ open class EarlGreyTestRunner : NSObject {
         }
     }
     
-    func executeJS(_ action: ExecuteJSAction) {
+    open func executeJS(_ action: ExecuteJSAction) {
         let webViewId = action.element!
         
         let js = action.code
@@ -229,7 +229,7 @@ open class EarlGreyTestRunner : NSObject {
         handleError(error: error)
     } 
     
-    func back(_ action: Action) {
+    open func back(_ action: Action) {
         let appDelegate = UIApplication.shared.delegate
         if let appDelegate = appDelegate, let window = appDelegate.window {
             let viewController = window!.rootViewController?.matcha_getVisibleViewController()
@@ -246,7 +246,7 @@ open class EarlGreyTestRunner : NSObject {
         let _ = condition?.wait(withTimeout: action.wait, pollInterval: CFTimeInterval(action.pollInterval))
     }
     
-    class func waitForCompletion(timeout: TimeInterval, pollInterval: TimeInterval, completionBlock: (() -> Bool)? = nil) {
+    open class func waitForCompletion(timeout: TimeInterval, pollInterval: TimeInterval, completionBlock: (() -> Bool)? = nil) {
         let condition = GREYCondition(name: "condition") { () -> Bool in
             if let completionBlock = completionBlock {
                 return completionBlock()

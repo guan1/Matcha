@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "Matcha"
-  s.version      = "0.0.3"
+  s.version      = "0.0.4"
   s.summary      = "A DSL for automated UI tests using EarlGrey"
 
   s.description  = <<-DESC
@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
 	
 	s.xcconfig       = { 'FRAMEWORK_SEARCH_PATHS' => '"$(PODS_ROOT)/"' }
 
-	s.source = { :git => "https://github.com/guan1/Matcha.git", :commit => "d6d159bd661a934c8b305156093c307d13f8448b" }		
+	s.source = { :git => "https://github.com/guan1/Matcha.git", :commit => "ba2c43f88f28d472a4be24650f9842b2754e39bd" }		
 		s.source_files  = "iOS/Matcha/Matcha/Sources/*.*"
 #	s.source       = { :http => "https://dl.dropboxusercontent.com/u/5810798/Matcha/x.zip"}
 # s.source_files = '*.swift', '*.h', '*.m'
