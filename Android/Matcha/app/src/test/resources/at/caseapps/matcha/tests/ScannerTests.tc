@@ -1,0 +1,56 @@
+TestCase: Scanner Tests
+Scenario: Test Scenario 1
+Preconditions:
+    @preconditionAction
+
+Steps:
+    # a comment
+    @http {
+        url: 'url',
+        headers: 'header1,header2',
+        params: 'param1, param2'
+    }
+
+    @verify element.id { value: 'Harald Schmidt'}
+    @verify element.id 'Harald Schmidt'
+    @verify element.id
+
+    @scroll element.id { to: target.id, direction: right, amount: 1500 }
+    @scroll element.id       { to: target.id, direction: left }
+
+    @scroll element.id { to: target.id, direction: left }
+
+    @executeJS element.id "document.forms['credentials'].j_username.value = '309405863';"
+    @executeJS element.id { code: "document.forms['credentials'].j_username.value = '309405863';" }
+
+    @customElement
+    @customElement { param: value}
+
+    @click element.id
+
+    @enter element.id 'value'
+    @enter element.id  {
+        value: 'value'
+    }
+
+    @back
+
+    @verify { navigationTitle: 'Dashboard' }
+
+    @contains element.id 'Harald Schneemann'
+
+    @wait
+    @wait 2
+
+    @searchField 'Test'
+
+#we can have multiple scenarios in one feature file
+Scenario: Test Scenario 2
+Preconditions:
+    @preconditionAction
+
+Steps:
+    # a comment
+    # another comment
+    @verify element.id { value: 'Harald Schmidt'}
+    @back
