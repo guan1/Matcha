@@ -1,7 +1,9 @@
-package at.caseapps.matcha;
+package at.caseapps.matcha.sample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import at.caseapps.matcha.R;
 
 public class MainActivity extends AppCompatActivity {
 

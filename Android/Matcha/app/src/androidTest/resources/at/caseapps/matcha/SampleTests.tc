@@ -1,0 +1,7 @@
+TestCase: Sample
+Scenario: Scenario 1
+
+Steps:
+    # a comment
+
+    @verify textView { value: 'Hello World!'}
