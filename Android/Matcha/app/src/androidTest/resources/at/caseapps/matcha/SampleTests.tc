@@ -4,4 +4,19 @@ Scenario: Scenario 1
 Steps:
     # a comment
 
-    @verify textView { value: 'Hello World!'}
+    @verify editText { value: 'Hello World!'}
+    @click button
+    @enter editText 'Harald Schneemann'
+    @verify editText { value: 'Harald Schneemann'}
+    @customElement
+    @contains editText 'Schneemann'
+    @wait 2
+    @searchField 'Test'
+
+    @verify { navigationTitle: 'Matcha' }
+
+#    @executeJS webView "document.forms['credentials'].j_username.value = 'xxxxxxx';"
+
+    @scroll recyclerView
+
+    @back

@@ -1,19 +1,13 @@
 package at.caseapps.matcha;
 
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
+import android.app.Activity;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.support.v7.widget.SearchView;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import static android.support.test.espresso.Espresso.*;
-import android.support.test.espresso.action.ViewActions;
-import android.support.test.espresso.matcher.ViewMatchers;
 
 import java.io.InputStream;
 
@@ -24,7 +18,7 @@ import at.caseapps.matcha.sample.MainActivity;
 public class SampleUITest extends MatchaEspressoTest {
 
     @Rule
-    public ActivityTestRule<MainActivity> mActivityRule = new ActivityTestRule<>(
+    public ActivityTestRule<MainActivity> activityRule = new ActivityTestRule<>(
             MainActivity.class);
 
     @Test
@@ -32,5 +26,20 @@ public class SampleUITest extends MatchaEspressoTest {
         String fileName = "SampleTests.tc";
         InputStream resourceAsStream = getClass().getResourceAsStream(fileName);
         performTests(fileName,resourceAsStream);
+    }
+
+    @SuppressWarnings("unused")
+    public void customElement(Action action) {
+        //do nothing
+    }
+
+    @Override
+    public Activity getCurrentActivity() {
+        return activityRule.getActivity();
+    }
+
+    @Override
+    public SearchView getSearchView() {
+        return activityRule.getActivity().getSearchView();
     }
 }

@@ -30,6 +30,11 @@ dependencies {
     compile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+    compile ('com.android.support.test.espresso:espresso-contrib:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
     androidTestCompile 'com.android.support.test:rules:0.5';
     androidTestCompile 'com.android.support.test:runner:0.5';
     compile 'com.android.support:appcompat-v7:25.3.1'
@@ -42,3 +47,16 @@ configurations.all {
         force 'com.android.support:support-annotations:23.1.1'
     }
 }
+
+task grantAnimationPermission(type: Exec, dependsOn: 'install') {
+    System.out.println('grantAnimationPermission')
+    commandLine "adb shell pm grant at.caseapps.matcha android.permission.SET_ANIMATION_SCALE".split(' ')
+}
+
+tasks.whenTaskAdded { task ->
+    System.out.println('task ' + task.name)
+    if (task.name.startsWith('connectedDebugAndroidTest')) {
+        task.dependsOn grantAnimationPermission
+    }
+}
+
