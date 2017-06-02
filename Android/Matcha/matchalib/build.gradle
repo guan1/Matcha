@@ -1,13 +1,14 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'com.jfrog.bintray'
 
 ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'at.caseapps.matcha'
+    bintrayRepo = 'Matcha'
+    bintrayName = 'Matcha'
 
     publishedGroupId = 'at.caseapps.matcha'
-    libraryName = 'Matcha'
-    artifact = 'matcha'
+    libraryName = 'matchalib'
+    artifactId = 'matchalib'
+    artifact = 'matchalib'
 
     libraryDescription = 'Matcha - a DSL for automated UI tests for Android and iOS based on Espresso and EarlGrey'
 
@@ -24,6 +25,31 @@ ext {
     licenseUrl = 'https://opensource.org/licenses/MIT'
     allLicenses = ["MIT"]
 }
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+
+    configurations = ['archives']
+    pkg {
+        repo = bintrayRepo
+        name = bintrayName
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = allLicenses
+        publish = true
+        publicDownloadNumbers = true
+        artifactId = 'matchalib'
+        version {
+            desc = libraryDescription
+        }
+    }
+}
+
 
 android {
     compileSdkVersion 25
