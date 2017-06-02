@@ -2,18 +2,17 @@ package at.caseapps.matcha;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.os.Build;
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.NoMatchingViewException;
+import android.support.test.espresso.PerformException;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.action.ViewActions;
-import android.support.test.espresso.assertion.ViewAssertions;
-import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.BoundedMatcher;
-import android.support.test.espresso.matcher.RootMatchers;
 import android.support.test.espresso.matcher.ViewMatchers;
+import android.support.test.espresso.util.HumanReadables;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -25,7 +24,11 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -42,6 +45,8 @@ import static org.hamcrest.Matchers.allOf;
  */
 
 public class EspressoRunner {
+    private final AtomicBoolean webViewEvaluationFinished = new AtomicBoolean(false);
+
     private TestCase testCase;
 
     private Scenario currentRunningScenario;
@@ -70,13 +75,20 @@ public class EspressoRunner {
     }
 
     private void performAction(Action action) {
-        try {
-            if(delegate == null || delegate.handles(action) == false) {
-                Method m = getClass().getMethod(action.name, Action.class);
-                m.invoke(this, action);
+        if(delegate != null) {
+            try {
+                delegate.handles(action);
+            }  catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (Exception e) {
+                //delegate cannot handle this action
+                try {
+                    Method m = getClass().getMethod(action.name, Action.class);
+                    m.invoke(this, action);
+                }catch(Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -199,28 +211,40 @@ public class EspressoRunner {
 
     @SuppressWarnings("unused")
     public void executeJS(Action action) {
-        Context context = getCurrentContext();
-        final Action.ExecuteJSAction executeJSAction = (Action.ExecuteJSAction) action;
+        Context context = this.getCurrentContext();
+        final Action.ExecuteJSAction executeJSAction = (Action.ExecuteJSAction)action;
         int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
 
-        onView(withId(id)).perform(new ViewAction() {
-            @Override
+
+        Espresso.onView(ViewMatchers.withId(id)).perform(new ViewAction() {
             public Matcher<View> getConstraints() {
                 return ViewMatchers.isAssignableFrom(WebView.class);
             }
 
-            @Override
             public String getDescription() {
                 return "execute JS";
             }
 
-            @Override
             public void perform(UiController uiController, View view) {
+                uiController.loopMainThreadForAtLeast(3000);
+                WebView webView = (WebView)view;
                 WebView webView = (WebView) view;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     webView.evaluateJavascript(executeJSAction.code, null);
                 } else {
                     webView.loadUrl("javascript:" + executeJSAction.code);
+                }
+                final long timeOut = System.currentTimeMillis() + 5000;
+                while (!webViewEvaluationFinished.get()) {
+                    if (timeOut < System.currentTimeMillis()) {
+                        throw new PerformException.Builder()
+                                .withActionDescription(this.getDescription())
+                                .withViewDescription(HumanReadables.describe(view))
+                                .withCause(new RuntimeException(String.format(Locale.US,
+                                        "Evaluating java script did not finish after %d ms of waiting.", 5000)))
+                                .build();
+                    }
+                    uiController.loopMainThreadForAtLeast(50);
                 }
             }
         });
@@ -241,7 +265,7 @@ public class EspressoRunner {
 
     public static interface EarlGreyTestRunnerDelegate {
 
-        boolean handles(Action action);
+        void handles(Action action) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException;
         SearchView getSearchView();
         Activity getCurrentActivity();
     }

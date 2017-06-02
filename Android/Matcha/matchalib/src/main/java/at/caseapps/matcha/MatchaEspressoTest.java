@@ -61,18 +61,9 @@ public class MatchaEspressoTest implements EspressoRunner.EarlGreyTestRunnerDele
     }
 
     @Override
-    public boolean handles(Action action) {
-        try {
-            Method m = getClass().getMethod(action.name, Action.class);
-            m.invoke(this, action);
-        } catch (NoSuchMethodException e) {
-            return false;
-        } catch (InvocationTargetException e) {
-            return false;
-        } catch (IllegalAccessException e) {
-            return false;
-        }
-        return true;
+    public void handles(Action action) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = getClass().getMethod(action.name, Action.class);
+        m.invoke(this, action);
     }
 
     class SystemAnimations {
