@@ -69,7 +69,7 @@ public class Action {
     public static class ScrollAction extends Action {
         public String to;
         public String direction = "right";
-        public float amount = 500;
+        public int amount = 500;
 
         public ScrollAction(String name, String firstParameter, Map<String, Object> parameters, int line) {
             super(name, firstParameter, parameters, line);
@@ -78,7 +78,7 @@ public class Action {
                 this.direction = (String) parameters.get("direction");
             }
             if (parameters.get("amount") != null) {
-                this.amount = Float.valueOf((String) parameters.get("amount"));
+                this.amount = Integer.valueOf((String) parameters.get("amount"));
             }
         }
     }

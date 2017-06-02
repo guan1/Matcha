@@ -166,7 +166,6 @@ public class ScannerTests {
             assertEquals(scenario2.steps.get(1).name, "back");
         } else {
             fail("parsing failed - no features found");
-            ;
         }
     }
 

@@ -103,8 +103,19 @@ public class EspressoRunner {
 
     //    onView(withId(id)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
 
-        int x = 10;
-        int y = 10;
+        int x = 0;
+        int y = 0;
+
+        if(scrollAction.direction.equals("right")) {
+            x = scrollAction.amount;
+        } else if(scrollAction.direction.equals("left")) {
+            x = scrollAction.amount * -1;
+        } else if(scrollAction.direction.equals("up")) {
+            y = scrollAction.amount * -1;
+        } else if(scrollAction.direction.equals("down")) {
+            y = scrollAction.amount;
+        }
+
         onView(withId(id)).perform(new XYScrollByPositionViewAction(x,y));
     }
 
@@ -276,7 +287,7 @@ public class EspressoRunner {
         @Override
         public void perform(UiController uiController, View view) {
             RecyclerView recyclerView = (RecyclerView) view;
-            recyclerView.scrollTo(x,y);
+            recyclerView.scrollBy(x,y);
         }
     }
 }
