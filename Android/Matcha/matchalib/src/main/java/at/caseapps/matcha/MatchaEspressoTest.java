@@ -13,6 +13,7 @@ import org.junit.ClassRule;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import at.caseapps.matcha.tests.Scanner;
@@ -64,7 +65,11 @@ public class MatchaEspressoTest implements EspressoRunner.EarlGreyTestRunnerDele
         try {
             Method m = getClass().getMethod(action.name, Action.class);
             m.invoke(this, action);
-        } catch (Exception e) {
+        } catch (NoSuchMethodException e) {
+            return false;
+        } catch (InvocationTargetException e) {
+            return false;
+        } catch (IllegalAccessException e) {
             return false;
         }
         return true;

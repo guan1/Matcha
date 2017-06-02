@@ -13,6 +13,7 @@ import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.espresso.matcher.RootMatchers;
+import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -205,7 +206,7 @@ public class EspressoRunner {
         onView(withId(id)).perform(new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
-                return isRoot();
+                return ViewMatchers.isAssignableFrom(WebView.class);
             }
 
             @Override

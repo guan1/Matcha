@@ -15,7 +15,7 @@ ext {
     siteUrl = 'https://github.com/guan1/Matcha'
     gitUrl = 'https://github.com/guan1/Matcha.git'
 
-    libraryVersion = '0.0.1'
+    libraryVersion = '0.0.3'
 
     developerId = 'guan'
     developerName = 'Andre Guggenberger'
