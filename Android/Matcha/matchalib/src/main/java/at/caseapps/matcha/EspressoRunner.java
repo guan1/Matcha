@@ -17,7 +17,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.View;
+import android.webkit.ValueCallback;
 import android.webkit.WebView;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.hamcrest.Description;
@@ -45,8 +47,6 @@ import static org.hamcrest.Matchers.allOf;
  */
 
 public class EspressoRunner {
-    private final AtomicBoolean webViewEvaluationFinished = new AtomicBoolean(false);
-
     private TestCase testCase;
 
     private Scenario currentRunningScenario;
@@ -114,7 +114,9 @@ public class EspressoRunner {
         Action.ScrollAction scrollAction = (Action.ScrollAction) action;
         int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
 
-    //    onView(withId(id)).perform(ViewActions.scrollTo()).check(ViewAssertions.matches(isDisplayed()));
+        if(id == 0) {
+            throw new RuntimeException("Element " + action.element + " not found!");
+        }
 
         int x = 0;
         int y = 0;
@@ -137,21 +139,52 @@ public class EspressoRunner {
         Context context = getCurrentContext();
         int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
 
-        onView(withId(id)).perform(ViewActions.click());
+        if(id == 0) {
+            throw new RuntimeException("Element " + action.element + " not found!");
+        }
+
+        onView(withId(id)).check(matches(allOf( ViewMatchers.isEnabled(), ViewMatchers.isClickable()))).perform(
+                new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return ViewMatchers.isEnabled();
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "click button";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        view.performClick();
+                    }
+                }
+        );
     }
+
     @SuppressWarnings("unused")
     public void enter(Action action) {
         Context context = getCurrentContext();
         Action.EnterAction enterAction = (Action.EnterAction) action;
         int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
 
-        onView(withId(id)).perform(ViewActions.replaceText(enterAction.value));
+        if(id == 0) {
+            throw new RuntimeException("Element " + action.element + " not found!");
+        }
+
+        onView(withId(id)).perform(new SetTextAction(enterAction.value));
     }
+
     @SuppressWarnings("unused")
     public void contains(Action action) {
         Context context = getCurrentContext();
         final Action.VerifyAction verifyAction = (Action.VerifyAction) action;
         int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
+
+        if(id == 0) {
+            throw new RuntimeException("Element " + action.element + " not found!");
+        }
 
         onView(withId(id)).check(matches(new BoundedMatcher<View, TextView>(TextView.class) {
             @Override
@@ -215,7 +248,11 @@ public class EspressoRunner {
         final Action.ExecuteJSAction executeJSAction = (Action.ExecuteJSAction)action;
         int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
 
+        if(id == 0) {
+            throw new RuntimeException("Element " + action.element + " not found!");
+        }
 
+        final AtomicBoolean evaluateFinished = new AtomicBoolean(false);
         Espresso.onView(ViewMatchers.withId(id)).perform(new ViewAction() {
             public Matcher<View> getConstraints() {
                 return ViewMatchers.isAssignableFrom(WebView.class);
@@ -228,13 +265,21 @@ public class EspressoRunner {
             public void perform(UiController uiController, View view) {
                 uiController.loopMainThreadForAtLeast(3000);
                 WebView webView = (WebView)view;
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                    webView.evaluateJavascript(executeJSAction.code, null);
+                    webView.evaluateJavascript(executeJSAction.code, new ValueCallback<String>() {
+                        @Override
+                        public void onReceiveValue(String value) {
+                            evaluateFinished.set(true);
+                        }
+                    });
                 } else {
                     webView.loadUrl("javascript:" + executeJSAction.code);
+                    evaluateFinished.set(true);
                 }
+
                 final long timeOut = System.currentTimeMillis() + 5000;
-                while (!webViewEvaluationFinished.get()) {
+                while (!evaluateFinished.get()) {
                     if (timeOut < System.currentTimeMillis()) {
                         throw new PerformException.Builder()
                                 .withActionDescription(this.getDescription())
@@ -286,6 +331,30 @@ public class EspressoRunner {
                 uiController.loopMainThreadForAtLeast((long) (seconds*1000));
             }
         };
+    }
+
+    public final class SetTextAction implements ViewAction {
+        private final String stringToBeSet;
+
+        public SetTextAction(String value) {
+            this.stringToBeSet = value;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Matcher<View> getConstraints() {
+            return allOf(isAssignableFrom(EditText.class));
+        }
+
+        @Override
+        public void perform(UiController uiController, View view) {
+            ((EditText) view).setText(stringToBeSet);
+        }
+
+        @Override
+        public String getDescription() {
+            return "set text";
+        }
     }
 
     private static final class XYScrollByPositionViewAction implements ViewAction {
