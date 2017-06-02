@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Matcha.iml" filepath="$PROJECT_DIR$/Matcha.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/matchalib/matchalib.iml" filepath="$PROJECT_DIR$/matchalib/matchalib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/matchautils/matchautils.iml" filepath="$PROJECT_DIR$/matchautils/matchautils.iml" />
     </modules>
   </component>
 </project>

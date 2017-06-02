@@ -4,7 +4,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
     defaultConfig {
-        applicationId "at.caseapps.matcha"
+        applicationId "at.caseapps.matcha.demo"
         minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
@@ -36,6 +36,9 @@ dependencies {
 
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
+
+    compile project(path: ':matchautils')
+
     androidTestCompile project(path: ':matchalib')
     testCompile project(path: ':matchalib')
 }

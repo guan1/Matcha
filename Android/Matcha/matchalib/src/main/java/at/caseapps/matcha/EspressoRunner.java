@@ -2,13 +2,16 @@ package at.caseapps.matcha;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.test.espresso.Espresso;
 import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.espresso.PerformException;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.ViewAssertion;
+import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.espresso.matcher.ViewMatchers;
@@ -22,8 +25,10 @@ import android.webkit.WebView;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,6 +43,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFro
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withTagKey;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
@@ -112,11 +118,7 @@ public class EspressoRunner {
     public void scroll(Action action) {
         Context context = getCurrentContext();
         Action.ScrollAction scrollAction = (Action.ScrollAction) action;
-        int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
-
-        if(id == 0) {
-            throw new RuntimeException("Element " + action.element + " not found!");
-        }
+        Matcher<View> viewMatcher = getViewMatcher(action, context);
 
         int x = 0;
         int y = 0;
@@ -131,19 +133,15 @@ public class EspressoRunner {
             y = scrollAction.amount;
         }
 
-        onView(withId(id)).perform(new XYScrollByPositionViewAction(x,y));
+        onView(viewMatcher).perform(new XYScrollByPositionViewAction(x,y));
     }
 
     @SuppressWarnings("unused")
-    public void click(Action action) {
+    public void click(final Action action) {
         Context context = getCurrentContext();
-        int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
+        Matcher<View> viewMatcher = getViewMatcher(action, context);
 
-        if(id == 0) {
-            throw new RuntimeException("Element " + action.element + " not found!");
-        }
-
-        onView(withId(id)).check(matches(allOf( ViewMatchers.isEnabled(), ViewMatchers.isClickable()))).perform(
+        onView(viewMatcher).check(matches(allOf(ViewMatchers.isEnabled(), ViewMatchers.isClickable()))).perform(
                 new ViewAction() {
                     @Override
                     public Matcher<View> getConstraints() {
@@ -163,30 +161,52 @@ public class EspressoRunner {
         );
     }
 
+    @NonNull
+    private Matcher<View> getViewMatcher(final Action action, Context context) {
+        int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
+
+        Matcher<View> viewMatcher;
+
+        if(id == 0) {
+            viewMatcher = withTagKey(at.caseapps.matcha.utils.R.id.matchaElementId, new BaseMatcher<Object>() {
+
+                @Override
+                public boolean matches(Object item) {
+                    String str = (String) item;
+                    return action.element.equals(str);
+                }
+
+                @Override
+                public void describeTo(Description description) {
+                    String idDescription = action.element;
+
+                    description.appendText("with element: " + idDescription);
+                }
+
+
+            });
+        } else {
+            viewMatcher = withId(id);
+        }
+        return viewMatcher;
+    }
+
     @SuppressWarnings("unused")
     public void enter(Action action) {
         Context context = getCurrentContext();
         Action.EnterAction enterAction = (Action.EnterAction) action;
-        int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
+        Matcher<View> viewMatcher = getViewMatcher(action, context);
 
-        if(id == 0) {
-            throw new RuntimeException("Element " + action.element + " not found!");
-        }
-
-        onView(withId(id)).perform(new SetTextAction(enterAction.value));
+        onView(viewMatcher).perform(new SetTextAction(enterAction.value));
     }
 
     @SuppressWarnings("unused")
     public void contains(Action action) {
         Context context = getCurrentContext();
         final Action.VerifyAction verifyAction = (Action.VerifyAction) action;
-        int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
+        Matcher<View> viewMatcher = getViewMatcher(action, context);
 
-        if(id == 0) {
-            throw new RuntimeException("Element " + action.element + " not found!");
-        }
-
-        onView(withId(id)).check(matches(new BoundedMatcher<View, TextView>(TextView.class) {
+        onView(viewMatcher).check(matches(new BoundedMatcher<View, TextView>(TextView.class) {
             @Override
             public void describeTo(Description description) {
                 description.appendText("with text: ");
@@ -246,14 +266,10 @@ public class EspressoRunner {
     public void executeJS(Action action) {
         Context context = this.getCurrentContext();
         final Action.ExecuteJSAction executeJSAction = (Action.ExecuteJSAction)action;
-        int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
-
-        if(id == 0) {
-            throw new RuntimeException("Element " + action.element + " not found!");
-        }
+        Matcher<View> viewMatcher = getViewMatcher(action, context);
 
         final AtomicBoolean evaluateFinished = new AtomicBoolean(false);
-        Espresso.onView(ViewMatchers.withId(id)).perform(new ViewAction() {
+        Espresso.onView(viewMatcher).perform(new ViewAction() {
             public Matcher<View> getConstraints() {
                 return ViewMatchers.isAssignableFrom(WebView.class);
             }

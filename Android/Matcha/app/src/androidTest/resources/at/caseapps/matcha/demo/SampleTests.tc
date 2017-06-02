@@ -6,6 +6,7 @@ Steps:
 
     @verify editText { value: 'Hello World!'}
     @click button
+    @click button1Tag
     @enter editText 'Harald Schneemann'
     @verify editText { value: 'Harald Schneemann'}
     @customElement

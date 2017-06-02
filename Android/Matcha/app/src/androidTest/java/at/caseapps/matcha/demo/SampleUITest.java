@@ -1,4 +1,4 @@
-package at.caseapps.matcha;
+package at.caseapps.matcha.demo;
 
 import android.app.Activity;
 import android.support.test.rule.ActivityTestRule;
@@ -13,7 +13,9 @@ import org.junit.runner.RunWith;
 
 import java.io.InputStream;
 
-import at.caseapps.matcha.sample.MainActivity;
+import at.caseapps.matcha.Action;
+import at.caseapps.matcha.MatchaEspressoTest;
+import at.caseapps.matcha.demo.MainActivity;
 
 
 @RunWith(AndroidJUnit4.class)

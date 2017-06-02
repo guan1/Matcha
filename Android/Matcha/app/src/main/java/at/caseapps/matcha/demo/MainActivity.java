@@ -1,4 +1,4 @@
-package at.caseapps.matcha.sample;
+package at.caseapps.matcha.demo;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +13,8 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.TextView;
 
-import at.caseapps.matcha.R;
+import at.caseapps.matcha.demo.R;
+import at.caseapps.matcha.utils.MatchaBinder;
 
 public class MainActivity extends AppCompatActivity {
     private SearchView searchView;
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
         CustomAdapter adapter = new CustomAdapter();
         recyclerView.setAdapter(adapter);
+
+        MatchaBinder.bind(findViewById(R.id.button1), "button1Tag");
     }
 
     @Override

@@ -1,1 +1,1 @@
-include ':app', ':matchalib'
+include ':app', ':matchalib', ':matchautils'

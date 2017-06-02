@@ -2,20 +2,20 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 
 ext {
-    bintrayRepo = 'Matcha'
+    bintrayRepo = 'MatchaUtils'
     bintrayName = 'Matcha'
 
-    publishedGroupId = 'at.caseapps.matcha'
-    libraryName = 'matchalib'
-    artifactId = 'matchalib'
-    artifact = 'matchalib'
+    publishedGroupId = 'at.caseapps.matcha.utils'
+    libraryName = 'matchautils'
+    artifactId = 'matchautils'
+    artifact = 'matchautils'
 
-    libraryDescription = 'Matcha - a DSL for automated UI tests for Android and iOS based on Espresso and EarlGrey'
+    libraryDescription = 'Matcha Utils'
 
     siteUrl = 'https://github.com/guan1/Matcha'
     gitUrl = 'https://github.com/guan1/Matcha.git'
 
-    libraryVersion = '0.0.11'
+    libraryVersion = '0.0.1'
 
     developerId = 'guan'
     developerName = 'Andre Guggenberger'
@@ -43,7 +43,7 @@ bintray {
         licenses = allLicenses
         publish = true
         publicDownloadNumbers = true
-        artifactId = 'matchalib'
+        artifactId = 'matchautils'
         version {
             desc = libraryDescription
         }
@@ -75,25 +75,6 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile project(path: ':matchautils')
-
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
-
-    compile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support'
-    })
-
-    compile ('com.android.support.test.espresso:espresso-contrib:2.2.2', {
-        exclude group: 'com.android.support'
-    })
-}
-
-configurations.all {
-    resolutionStrategy {
-        force 'com.android.support:support-annotations:25.3.1'
-        force 'com.android.support:appcompat-v7:25.3.1'
-    }
 }
 
 

@@ -1,0 +1,4 @@
+<resources>
+    <item name="matchaElementId" type="id"/>
+    <string name="app_name">matchautils</string>
+</resources>
