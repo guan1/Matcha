@@ -228,7 +228,6 @@ public class EspressoRunner {
             public void perform(UiController uiController, View view) {
                 uiController.loopMainThreadForAtLeast(3000);
                 WebView webView = (WebView)view;
-                WebView webView = (WebView) view;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     webView.evaluateJavascript(executeJSAction.code, null);
                 } else {
