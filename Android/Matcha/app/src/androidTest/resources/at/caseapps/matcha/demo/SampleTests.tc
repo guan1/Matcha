@@ -5,6 +5,7 @@ Steps:
     # a comment
 
     @verify editText { value: 'Hello World!'}
+    @verify editText
     @click button
     @click button1Tag
     @enter editText 'Harald Schneemann'
@@ -18,6 +19,8 @@ Steps:
 
 #    @executeJS webView "document.forms['credentials'].j_username.value = 'xxxxxxx';"
 
-    @scroll recyclerView
+    @scroll recyclerView {to: 'row30'}
+
+    @wait 5
 
     @back

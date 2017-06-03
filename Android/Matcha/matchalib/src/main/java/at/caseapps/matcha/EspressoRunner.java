@@ -13,9 +13,11 @@ import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.espresso.action.ViewActions;
+import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.espresso.util.HumanReadables;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.hamcrest.BaseMatcher;
@@ -39,6 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
@@ -46,6 +50,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withTagKey;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anyOf;
 
 
 /**
@@ -105,20 +110,15 @@ public class EspressoRunner {
 
     @SuppressWarnings("unused")
     public void back(Action action) {
-        final Activity activity = delegate.getCurrentActivity();
-        activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                activity.onBackPressed();
-            }
-        });
+        Espresso.pressBack();
     }
 
     @SuppressWarnings("unused")
     public void scroll(Action action) {
         Context context = getCurrentContext();
         Action.ScrollAction scrollAction = (Action.ScrollAction) action;
-        Matcher<View> viewMatcher = getViewMatcher(action, context);
+        Matcher<View> viewMatcher = getViewMatcher(action.element, context);
+
 
         int x = 0;
         int y = 0;
@@ -133,15 +133,14 @@ public class EspressoRunner {
             y = scrollAction.amount;
         }
 
-        onView(viewMatcher).perform(new XYScrollByPositionViewAction(x,y));
+        onView(viewMatcher).perform(new ScrollViewAction(context, scrollAction.to, x,y));
     }
 
     @SuppressWarnings("unused")
     public void click(final Action action) {
         Context context = getCurrentContext();
-        Matcher<View> viewMatcher = getViewMatcher(action, context);
-
-        onView(viewMatcher).check(matches(allOf(ViewMatchers.isEnabled(), ViewMatchers.isClickable()))).perform(
+        Matcher<View> viewMatcher = getViewMatcher(action.element, context);
+        onView(viewMatcher).perform(
                 new ViewAction() {
                     @Override
                     public Matcher<View> getConstraints() {
@@ -162,32 +161,27 @@ public class EspressoRunner {
     }
 
     @NonNull
-    private Matcher<View> getViewMatcher(final Action action, Context context) {
-        int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
+    private Matcher<View> getViewMatcher(final String element, Context context) {
+        final int id = context.getResources().getIdentifier(element, "id", context.getPackageName());
 
         Matcher<View> viewMatcher;
+        viewMatcher = new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("with key: " + element);
+            }
 
-        if(id == 0) {
-            viewMatcher = withTagKey(at.caseapps.matcha.utils.R.id.matchaElementId, new BaseMatcher<Object>() {
-
-                @Override
-                public boolean matches(Object item) {
-                    String str = (String) item;
-                    return action.element.equals(str);
+            @Override
+            public boolean matchesSafely(View view) {
+                if(view.getTag(at.caseapps.matcha.utils.R.id.matchaElementId) != null) {
+                    String v = (String) view.getTag(at.caseapps.matcha.utils.R.id.matchaElementId);
+                    if(v.equals(element)) {
+                        return true;
+                    }
                 }
-
-                @Override
-                public void describeTo(Description description) {
-                    String idDescription = action.element;
-
-                    description.appendText("with element: " + idDescription);
-                }
-
-
-            });
-        } else {
-            viewMatcher = withId(id);
-        }
+                return id == view.getId();
+            }
+        };
         return viewMatcher;
     }
 
@@ -195,7 +189,7 @@ public class EspressoRunner {
     public void enter(Action action) {
         Context context = getCurrentContext();
         Action.EnterAction enterAction = (Action.EnterAction) action;
-        Matcher<View> viewMatcher = getViewMatcher(action, context);
+        Matcher<View> viewMatcher = getViewMatcher(action.element, context);
 
         onView(viewMatcher).perform(new SetTextAction(enterAction.value));
     }
@@ -204,12 +198,12 @@ public class EspressoRunner {
     public void contains(Action action) {
         Context context = getCurrentContext();
         final Action.VerifyAction verifyAction = (Action.VerifyAction) action;
-        Matcher<View> viewMatcher = getViewMatcher(action, context);
+        Matcher<View> viewMatcher = getViewMatcher(action.element, context);
 
         onView(viewMatcher).check(matches(new BoundedMatcher<View, TextView>(TextView.class) {
             @Override
             public void describeTo(Description description) {
-                description.appendText("with text: ");
+                description.appendText("contains text: ");
             }
 
             @Override
@@ -256,9 +250,24 @@ public class EspressoRunner {
             }
         } else {
             Action.VerifyAction verifyAction = (Action.VerifyAction) action;
-            int id = context.getResources().getIdentifier(action.element, "id", context.getPackageName());
+            Matcher<View> viewMatcher = getViewMatcher(action.element, context);
 
-            onView(withId(id)).check(matches(withText(verifyAction.value)));
+            if(verifyAction.value==null) {
+                onView(viewMatcher).check(matches(new BoundedMatcher<View, TextView>(TextView.class) {
+                    @Override
+                    public void describeTo(Description description) {
+                        description.appendText("verify not null");
+                    }
+
+                    @Override
+                    public boolean matchesSafely(TextView textView) {
+                        return textView.getText() != null && textView.getText().toString().length() > 0;
+                    }
+                }));
+            } else {
+                onView(viewMatcher).check(matches(withText(verifyAction.value)));
+            }
+
         }
     }
 
@@ -266,7 +275,7 @@ public class EspressoRunner {
     public void executeJS(Action action) {
         Context context = this.getCurrentContext();
         final Action.ExecuteJSAction executeJSAction = (Action.ExecuteJSAction)action;
-        Matcher<View> viewMatcher = getViewMatcher(action, context);
+        Matcher<View> viewMatcher = getViewMatcher(action.element, context);
 
         final AtomicBoolean evaluateFinished = new AtomicBoolean(false);
         Espresso.onView(viewMatcher).perform(new ViewAction() {
@@ -279,7 +288,7 @@ public class EspressoRunner {
             }
 
             public void perform(UiController uiController, View view) {
-                uiController.loopMainThreadForAtLeast(3000);
+                uiController.loopMainThreadForAtLeast(5000);
                 WebView webView = (WebView)view;
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -306,6 +315,7 @@ public class EspressoRunner {
                     }
                     uiController.loopMainThreadForAtLeast(50);
                 }
+                uiController.loopMainThreadForAtLeast(50);
             }
         });
     }
@@ -373,11 +383,15 @@ public class EspressoRunner {
         }
     }
 
-    private static final class XYScrollByPositionViewAction implements ViewAction {
+    private final class ScrollViewAction implements ViewAction {
+        private final Context context;
+        private final String element;
         private final int x;
         private final int y;
 
-        private XYScrollByPositionViewAction(int x, int y) {
+        private ScrollViewAction(Context context, String element, int x, int y) {
+            this.context = context;
+            this.element = element;
             this.x = x;
             this.y = y;
         }
@@ -385,18 +399,24 @@ public class EspressoRunner {
         @SuppressWarnings("unchecked")
         @Override
         public Matcher<View> getConstraints() {
-            return allOf(isAssignableFrom(RecyclerView.class), isDisplayed());
+            return anyOf(isAssignableFrom(RecyclerView.class), isAssignableFrom(ScrollView.class), isAssignableFrom(ViewPager.class));
         }
 
         @Override
         public String getDescription() {
-            return "scroll RecyclerView by " + x + "/" + y;
+            return "scroll by " + x + "/" + y;
         }
 
         @Override
         public void perform(UiController uiController, View view) {
-            RecyclerView recyclerView = (RecyclerView) view;
-            recyclerView.scrollBy(x,y);
+            if(view instanceof ScrollView) {
+                view.scrollBy(x,y);
+            } else if(view instanceof RecyclerView){
+                scrollTo(getViewMatcher(element, context)).perform(uiController, view);
+            } else if(view instanceof ViewPager){
+                ViewPager viewPager = (ViewPager) view;
+                viewPager.scrollBy(x,y);
+            }
         }
     }
 }

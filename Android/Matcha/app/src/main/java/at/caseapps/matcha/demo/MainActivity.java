@@ -76,10 +76,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(ViewHolder viewHolder, final int position) {
             viewHolder.getTextView().setText("Text " + position);
+            MatchaBinder.bind(viewHolder.itemView,"row" + position);
         }
         @Override
         public int getItemCount() {
-            return 20;
+            return 100;
         }
     }
 }
